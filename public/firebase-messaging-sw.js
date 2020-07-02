@@ -1,13 +1,9 @@
-importScripts("https://www.gstatic.com/firebasejs/5.9.4/firebase-app.js");
-importScripts("https://www.gstatic.com/firebasejs/5.9.4/firebase-messaging.js");
-
-firebase.initializeApp({
-  messagingSenderId: "1062407524656"
-});
+importScripts("https://www.gstatic.com/firebasejs/7.9.0/firebase-app.js");
+importScripts("https://www.gstatic.com/firebasejs/7.9.0/firebase-messaging.js");
 
 const messaging = firebase.messaging();
 
-messaging.setBackgroundMessageHandler(function(payload) {
+messaging.setBackgroundMessageHandler(function (payload) {
   const promiseChain = clients
     .matchAll({
       type: "window",
@@ -25,7 +21,7 @@ messaging.setBackgroundMessageHandler(function(payload) {
   return promiseChain;
 });
 
-self.addEventListener('notificationclick', function(event) {
+self.addEventListener("notificationclick", function(event) {
   // do what you want
   // ...
 });

@@ -5,13 +5,17 @@ import { compose, lifecycle, withHandlers, withState } from "recompose";
 const renderNotification = (notification, i) => <li key={i}>{notification}</li>;
 
 const registerPushListener = pushNotification =>
-  navigator.serviceWorker.addEventListener("message", ({ data }) =>
-    pushNotification(
-      data.data
-        ? data.data.message
-        : data["firebase-messaging-msg-data"].data.message
-    )
-  );
+  navigator.serviceWorker.addEventListener("message", ({ data }) => {
+    if (data && data.firebaseMessaging) {
+      console.log(data)
+      if (data.firebaseMessaging.type === "push-received") {
+        const { notification } = data.firebaseMessaging.payload;
+        pushNotification(JSON.stringify(notification));
+      } else {
+        // handle another events.
+      }
+    }
+  });
 
 const App = ({ token, notifications }) => (
   <>
@@ -34,7 +38,7 @@ export default compose(
       setNotifications,
       notifications
     }) => newNotification =>
-      setNotifications(notifications.concat(newNotification))
+        setNotifications(notifications.concat(newNotification))
   }),
   lifecycle({
     async componentDidMount() {
@@ -42,11 +46,11 @@ export default compose(
 
       messaging
         .requestPermission()
-        .then(async function() {
+        .then(async function () {
           const token = await messaging.getToken();
           setToken(token);
         })
-        .catch(function(err) {
+        .catch(function (err) {
           console.log("Unable to get permission to notify.", err);
         });
 
